@@ -1,0 +1,37 @@
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+import io
+from sklearn.linear_model import Lasso
+
+from google.colab import files
+uploaded = files.upload()
+
+df = pd.read_excel(io.BytesIO(uploaded['Solardata_1.xlsx']))
+print(df)
+
+df.head()
+df.dtypes
+df.dtypes
+for x in df:
+    if df[x].dtypes == "int64":
+        df[x] = df[x].astype(float)
+        print (df[x].dtypes)
+
+df = df.select_dtypes(exclude=['object'])
+df=df.fillna(df.mean())
+X = df.drop('Power',axis=1)
+y = df['Power']
+
+print(X)
+print(y)
+
+from sklearn.linear_model import Lasso
+X_train, X_test, y_train, y_test = train_test_split(X, y,test_size = 0.2, random_state = 10)
+lasso_model = Lasso(alpha=1.0)
+lasso=lasso_model.fit(X_train, y_train)
+lasso_predict = lasso.predict(X_test)
+print(lasso_predict)
+
+y_pred = lasso.predict([[27.0,70.0]])
