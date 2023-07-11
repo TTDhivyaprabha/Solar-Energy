@@ -1,0 +1,50 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import io
+
+from google.colab import files
+uploaded = files.upload()
+
+df = pd.read_excel(io.BytesIO(uploaded['Solardata_1.xlsx']))
+print(df)
+
+df.head()
+df.dtypes
+
+df.dtypes
+for x in df:
+    if df[x].dtypes == "int64":
+        df[x] = df[x].astype(float)
+        print (df[x].dtypes)
+
+df = df.select_dtypes(exclude=['object'])
+df=df.fillna(df.mean())
+X = df.drop('Power',axis=1)
+y = df['Power']
+
+print(X)
+
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state = 0)
+
+import seaborn as sns 
+
+corr_matrix = df.corr()
+sns.heatmap(corr_matrix,annot=True)
+
+from sklearn.svm import SVR
+svr = SVR(kernel = 'linear',C = 1000)
+
+hyper_params_svr = {'gamma':np.random.normal(12,2,10000),'C':np.random.normal(1,0.2,10000)}
+svr_tune = SVR
+svr_rbf = SVR(kernel='rbf')
+y_svr = svr_rbf.fit(X_train,y_train)
+predict_svr_train = y_svr.predict(X_test)
+print(predict_svr_train)
+
+y_pred = y_svr.predict([[27.0,70.0]])
+res = np.round(y_pred,2)
